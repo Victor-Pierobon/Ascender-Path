@@ -2,7 +2,7 @@
 
 PHASE 1: Core Building Blocks (Focus: Python & Basic Flet UI)
 
-    Project 1: "Basic Task Tracker" - Python & Simple Flet UI (Focus: Input, Output, and Lists)
+    ✓ Project 1: "Basic Task Tracker" - Python & Simple Flet UI (Focus: Input, Output, and Lists)
 
         Goal: Create a simple Flet application to manage a list of tasks.
 
@@ -32,7 +32,7 @@ PHASE 1: Core Building Blocks (Focus: Python & Basic Flet UI)
 
     Why this is important: Establishes basic UI principles, fundamental interactions, and dynamic display, necessary for bigger applications.
 
-    Project 2: "Enhanced Task Tracker with Persistent Storage" - Python, Flet, and SQLite3 (Focus: Database and Data Handling)
+    - Project 2: "Enhanced Task Tracker with Persistent Storage" - Python, Flet, and SQLite3 (Focus: Database and Data Handling)
 
         Goal: Extend the Task Tracker to store tasks in a SQLite database.
 
