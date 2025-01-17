@@ -32,7 +32,7 @@ PHASE 1: Core Building Blocks (Focus: Python & Basic Flet UI)
 
     Why this is important: Establishes basic UI principles, fundamental interactions, and dynamic display, necessary for bigger applications.
 
-    - Project 2: "Enhanced Task Tracker with Persistent Storage" - Python, Flet, and SQLite3 (Focus: Database and Data Handling)
+    ✓ Project 2: "Enhanced Task Tracker with Persistent Storage" - Python, Flet, and SQLite3 (Focus: Database and Data Handling)
 
         Goal: Extend the Task Tracker to store tasks in a SQLite database.
 
@@ -64,7 +64,7 @@ PHASE 1: Core Building Blocks (Focus: Python & Basic Flet UI)
 
 PHASE 2: Building the Foundation of "Ascender Path" (Focus: Core System Concepts)
 
-    Project 3: "Simple Character Builder" - Python, Flet, and SQLite3 (Focus: Data Modeling)
+    - Project 3: "Simple Character Builder" - Python, Flet, and SQLite3 (Focus: Data Modeling)
 
         Goal: Create a Flet app to create and manage character data.
 

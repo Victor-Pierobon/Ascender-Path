@@ -1,34 +1,29 @@
 import flet as ft
+import database
+from components.task_item import build_item
 
 def main(page: ft.Page):
     page.title = "Task Tracker"
 
-    task_list = [] 
 
     # how it should store and displays tasks
     def add_task(e): # e is the event
      task = task_field.value # get the value of the task field
      if task:
-        task_list.append({"task": task}) # store each task as a dictionary
-        task_field.value = "" 
+        database.add_task_to_db(task)
+        task_field.value = ""
         update_task_list_view()
         page.update()
 
     def clear_list(e):
-       task_list.clear()
+       database.clear_task_db()
        update_task_list_view()
        page.update()
 
-    def item_delete(index):
-       task_list.pop(index)
+    def item_delete(id):
+       database.remove_task_from_db(id)
        update_task_list_view()
        page.update()
-
-    def build_item(task, index):
-       return ft.Row([
-          ft.Text(task["task"]),
-          ft.ElevatedButton("Delete", on_click=lambda e: item_delete(index))
-       ])
 
     # components and actions
     task_field = ft.TextField(label = "Add task", on_submit=add_task) # on_submit is an event that triggers when the user presses enter
@@ -37,11 +32,16 @@ def main(page: ft.Page):
     task_list_column = ft.Column([])
 
     def update_task_list_view():
+       tasks = database.get_all_tasks()
        task_list_column.controls.clear()
-       for index, task in enumerate(task_list):
-          task_list_column.controls.append(build_item(task, index))
+       for task in tasks:
+          task_list_column.controls.append(build_item(task, item_delete))
 
     page.update()
+
+    database.create_table()
+    database.create_characters_table()
+    update_task_list_view()
 
     # User interface
     page.add(
