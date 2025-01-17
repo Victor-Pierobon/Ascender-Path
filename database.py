@@ -103,7 +103,7 @@ def create_characters_table():
         finally:
             conn.close()
 
-def add_character(character_data):
+def add_character_to_db(character_data):
     conn = create_connection()
     if conn is not None:
         try:
@@ -117,6 +117,20 @@ def add_character(character_data):
             print(f"Error adding character: {e}")
         finally:
             conn.close()
+
+def get_all_characters():
+    conn = create_connection()
+    characters = []
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, name, level, strength, agility, intelligence, endurance, perception FROM characters")
+            characters = cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"Error getting characters: {e}")
+        finally:
+            conn.close()
+    return characters
 
 def remove_character(id):
     conn = create_connection()
