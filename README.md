@@ -64,7 +64,7 @@ PHASE 1: Core Building Blocks (Focus: Python & Basic Flet UI)
 
 PHASE 2: Building the Foundation of "Ascender Path" (Focus: Core System Concepts)
 
-    - Project 3: "Simple Character Builder" - Python, Flet, and SQLite3 (Focus: Data Modeling)
+    ✓ Project 3: "Simple Character Builder" - Python, Flet, and SQLite3 (Focus: Data Modeling)
 
         Goal: Create a Flet app to create and manage character data.
 
@@ -90,7 +90,7 @@ PHASE 2: Building the Foundation of "Ascender Path" (Focus: Core System Concepts
 
     Why this is important: Establish a character creation process, core to your app
 
-    Project 4: "Basic Quest System" - Python, Flet, and SQLite3 (Focus: Relational Data)
+    - Project 4: "Basic Quest System" - Python, Flet, and SQLite3 (Focus: Relational Data)
 
         Goal: Create a basic quest system with simple quest descriptions.
 
