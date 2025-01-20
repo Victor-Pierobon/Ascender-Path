@@ -1,20 +1,18 @@
 import sqlite3
 
-# establish connection to the database
 def create_connection():
-    conn = None # initialize connection as None
+    conn = None
     try:
-        conn = sqlite3.connect("./ascender_path.db") # attempt to connect to the database
-    except sqlite3.Error as e: # catch any errors on the connection
-        print(f"Error connecting to database: {e}") # print the error to the console
-    return conn # return the connection, may be None if an error occurred
+        conn = sqlite3.connect("./ascender_path.db")
+    except sqlite3.Error as e:
+        print(f"Error connecting to database: {e}")
+    return conn
 
-# create a table if not exists
 def create_table():
-    conn = create_connection() # call the create connection to try to connect to the database
-    if conn is not None: # verify if the connection is valid (not None)
+    conn = create_connection()
+    if conn is not None:
         try:
-            cursor = conn.cursor() # create a cursor object to execute SQL commands
+            cursor = conn.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS tasks(
                            id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,16 +21,17 @@ def create_table():
                     """)
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error creating table: {e}") # catches errors and prints them to the console
+            print(f"Error creating table: {e}")
         finally:
             conn.close()
+
 
 def add_task_to_db(task):
     conn = create_connection()
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO tasks (task) VALUES (?)", (task,)) # sql insert query
+            cursor.execute("INSERT INTO tasks (task) VALUES (?)", (task,))
             conn.commit()
         except sqlite3.Error as e:
             print(f"Error assing task: {e}")
@@ -41,17 +40,17 @@ def add_task_to_db(task):
 
 def get_all_tasks():
     conn = create_connection()
-    tasks = [] # inicialize the tasks array
+    tasks = []
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, task FROM tasks") # sql select alll
-            tasks = cursor.fetchall()# get the result from the query
+            cursor.execute("SELECT id, task FROM tasks")
+            tasks = cursor.fetchall()
         except sqlite3.Error as e:
             print(f"Error getting tasks: {e}")
         finally:
             conn.close()
-    return tasks # return the result
+    return tasks
 
 def remove_task_from_db(id):
     conn = create_connection()
@@ -65,7 +64,6 @@ def remove_task_from_db(id):
         finally:
             conn.close()
 
-
 def clear_task_db():
     conn = create_connection()
     if conn is not None:
@@ -78,8 +76,6 @@ def clear_task_db():
         finally:
             conn.close()
 
-
-# CHARACTER CREATION
 def create_characters_table():
     conn = create_connection()
     if conn is not None:
@@ -103,19 +99,20 @@ def create_characters_table():
         finally:
             conn.close()
 
-def add_character_to_db(character_data):
+
+def add_character(character_data):
     conn = create_connection()
     if conn is not None:
-        try:
+         try:
             cursor = conn.cursor()
             cursor.execute("""
-                    INSERT INTO characters(name, level, strength, agility, intelligence, endurance, perception)
-                    VALUES(?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO characters (name, level, strength, agility, intelligence, endurance, perception)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, character_data)
             conn.commit()
-        except sqlite3.Error as e:
+         except sqlite3.Error as e:
             print(f"Error adding character: {e}")
-        finally:
+         finally:
             conn.close()
 
 def get_all_characters():
@@ -137,9 +134,9 @@ def remove_character(id):
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM character WHERE id = ?", (id,))
+            cursor.execute("DELETE FROM characters WHERE id = ?", (id,))
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error removing character: {e}")
+          print(f"Error removing character: {e}")
         finally:
-            conn.close()
+          conn.close()

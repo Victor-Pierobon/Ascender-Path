@@ -8,19 +8,18 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
 import database
-from character_item import build_item
+from character_builder.components.character_item import build_item
 
 
 def main(page: ft.Page):
     page.title = "Character Builder"
 
-    
 
     def add_character(e):
         name = name_field.value
         
         if name:
-            character_data = (name, 1, 1, 1, 1, 1, 1) # Create a tuple with default values
+            character_data = (name, 1, 0, 0, 0, 0, 0) # Create a tuple with default values
             database.add_character(character_data) # add character to database
             name_field.value = "" # clear name field
             update_characters_view() # update the list of characters
