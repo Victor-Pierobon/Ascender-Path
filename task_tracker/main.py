@@ -1,4 +1,12 @@
 import flet as ft
+import sys
+import os
+
+# Get the root directory of the project (where database.py is located)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# Add the root directory to sys.path so Python can find modules there
+sys.path.insert(0, project_root)
+
 import database
 from components.task_item import build_item
 
