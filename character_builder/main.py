@@ -1,12 +1,10 @@
 import flet as ft
 import sys
 import os
-
 # Get the root directory of the project (where database.py is located)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # Add the root directory to sys.path so Python can find modules there
 sys.path.insert(0, project_root)
-
 import database
 from character_builder.components.character_item import build_item
 
@@ -19,7 +17,7 @@ def main(page: ft.Page):
         name = name_field.value
         
         if name:
-            character_data = (name, 1, 0, 0, 0, 0, 0) # Create a tuple with default values
+            character_data = (name,) # Create a tuple with default values
             database.add_character(character_data) # add character to database
             name_field.value = "" # clear name field
             update_characters_view() # update the list of characters
@@ -43,7 +41,7 @@ def main(page: ft.Page):
     create_button = ft.ElevatedButton("Create Character", on_click=add_character)
     character_list_column = ft.Column([])
 
-
+    database.create_character_stat_table() # create stat table
     database.create_characters_table() # create characters table
     update_characters_view() # initial render of the characters
 
