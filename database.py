@@ -175,3 +175,20 @@ def create_character_stat_table():
             print(f"Error trying to create character stat table: {e}")
         finally:
             conn.close()
+
+def add_xp_to_stat(character_id, stat_name, xp_amount):
+    conn = create_connection()
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE character_stats
+                SET xp = xp + ?
+                WHERE character_id = ? AND stat_name = ?
+            """), (xp_amount, character_id, stat_name)
+            conn.commit()
+            update_character_stats(character_id)
+        except sqlite3.Error as e:
+            print(f"Error addig xp to stat: {e}")
+        finally:
+            conn.close()
