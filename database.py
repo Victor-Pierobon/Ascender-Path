@@ -99,7 +99,7 @@ def add_character(character_data):
     if conn is not None:
          try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO characters (name) VALUES(?)", (character_data[0],))
+            cursor.execute("INSERT INTO characters (name) VALUES(?)", (character_data,))
             character_id = cursor.lastrowid # get the id of the new character
             stats = ['strength', 'agility', 'intelligence', 'endurance', 'perception']
             for stat in stats:
