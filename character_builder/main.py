@@ -23,11 +23,16 @@ def main(page: ft.Page):
             update_characters_view() # update the list of characters
             page.update() # update the UI
 
+    def add_xp(character_id, stat_name, xp_amount):
+        database.add_xp_to_stat(character_id, stat_name, xp_amount)
+        update_characters_view()
+        page.update()
+
     def update_characters_view():
         characters = database.get_all_characters()
         character_list_column.controls.clear()
         for character in characters:
-            character_list_column.controls.append(build_item(character, item_delete))
+            character_list_column.controls.append(build_item(character, item_delete, add_xp))
         page.update()
 
 

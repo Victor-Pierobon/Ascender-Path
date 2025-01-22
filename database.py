@@ -1,4 +1,5 @@
 import sqlite3
+from math import floor, sqrt
 
 def create_connection():
     conn = None
@@ -93,7 +94,6 @@ def create_characters_table():
         finally:
             conn.close()
 
-
 def add_character(character_data):
     conn = create_connection()
     if conn is not None:
@@ -185,10 +185,41 @@ def add_xp_to_stat(character_id, stat_name, xp_amount):
                 UPDATE character_stats
                 SET xp = xp + ?
                 WHERE character_id = ? AND stat_name = ?
-            """), (xp_amount, character_id, stat_name)
+            """, (xp_amount, character_id, stat_name,))
             conn.commit()
             update_character_stats(character_id)
         except sqlite3.Error as e:
-            print(f"Error addig xp to stat: {e}")
+            print(f"Error adding xp to stat: {e}")
+        finally:
+            conn.close()
+
+
+def update_character_stats(character_id):
+    conn = create_connection()
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT  id, stat_name, xp FROM character_stats WHERE character_id = ?", (character_id,))
+            character_stats = cursor.fetchall()
+
+            character_level = 0
+            for row in character_stats:
+                stat_id = row[0]
+                stat_name = row[1]
+                xp = row[2]
+
+                stat_level = floor(sqrt(xp) / 3)
+                xp_to_level_up = 5 + stat_level * 1.25
+
+
+                if  xp >= xp_to_level_up:
+                    stat_level = stat_level + 1
+                    cursor.execute("UPDATE character_stats SET xp = ? WHERE id = ?", (xp - xp_to_level_up, stat_id))
+                character_level = character_level + stat_level
+
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error updating character stats: {e}")
         finally:
             conn.close()
