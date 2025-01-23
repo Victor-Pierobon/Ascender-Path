@@ -1,5 +1,5 @@
 import sqlite3
-from math import floor, sqrt
+from math import floor, sqrt, ceil
 
 def create_connection():
     conn = None
@@ -212,9 +212,9 @@ def update_character_stats(character_id):
                 xp = row[2]
                 stat_level = row[3]
 
-                xp_to_level_up = 5 + stat_level*1.25
-                if xp >= xp_to_level_up:
-                 xp = xp_to_level_up
+                xp_to_level_up = 5 + stat_level*(1.25 + stat_level/10)
+                if xp >= ceil(xp_to_level_up):
+                 xp = floor(xp_to_level_up)
                  stat_level = stat_level + 1
                  cursor.execute("UPDATE character_stats SET xp = ?, level = ? WHERE id = ?", (xp, stat_level, stat_id))
                 character_level = character_level + stat_level
