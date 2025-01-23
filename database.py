@@ -99,11 +99,11 @@ def add_character(character_data):
     if conn is not None:
          try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO characters (name) VALUES(?)", (character_data,))
+            cursor.execute("INSERT INTO characters (name) VALUES(?)", (character_data[0],))
             character_id = cursor.lastrowid # get the id of the new character
             stats = ['strength', 'agility', 'intelligence', 'endurance', 'perception']
             for stat in stats:
-                cursor.execute("INSERT INTO character_stats (character_id, stat_name, xp) VALUES(?, ?, ?)", (character_id, stat, 0))
+                cursor.execute("INSERT INTO character_stats (character_id, stat_name, xp, level) VALUES(?, ?, ?, ?)", (character_id, stat, 0, 0))
             conn.commit()
          except sqlite3.Error as e:
             print(f"Error adding character: {e}")
@@ -121,7 +121,8 @@ def get_all_characters():
                     characters.id,
                     characters.name,
                     character_stats.stat_name,
-                    character_stats.xp
+                    character_stats.xp,
+                    character_stats.level
                 FROM characters
                 INNER JOIN character_stats
                 ON characters.id = character_stats.character_id
@@ -133,11 +134,12 @@ def get_all_characters():
               character_name = row[1]
               stat_name = row[2]
               xp = row[3]
+              level = row[4]
 
               if character_id in characters:
-                  characters[character_id]["stats"].append({"stat_name": stat_name, "xp": xp})
+                  characters[character_id]["stats"].append({"stat_name": stat_name, "xp": xp, "level": level})
               else:
-                 characters[character_id] = {"id": character_id, "name": character_name, "stats": [{"stat_name": stat_name, "xp": xp}]}
+                 characters[character_id] = {"id": character_id, "name": character_name, "stats": [{"stat_name": stat_name, "xp": xp, "level": level}]}
         except sqlite3.Error as e:
             print(f"Error getting characters: {e}")
         finally:
@@ -167,6 +169,7 @@ def create_character_stat_table():
                     character_id INTEGER NOT NULL,
                     stat_name TEXT NOT NULL,
                     xp INTEGER NOT NULL,
+                    level INTEGER NOT NULL,
                     FOREIGN KEY (character_id) REFERENCES characters(id)
                 )
             """)
@@ -185,7 +188,7 @@ def add_xp_to_stat(character_id, stat_name, xp_amount):
                 UPDATE character_stats
                 SET xp = xp + ?
                 WHERE character_id = ? AND stat_name = ?
-            """, (xp_amount, character_id, stat_name,))
+            """, (xp_amount, character_id, stat_name))
             conn.commit()
             update_character_stats(character_id)
         except sqlite3.Error as e:
@@ -199,7 +202,7 @@ def update_character_stats(character_id):
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT  id, stat_name, xp FROM character_stats WHERE character_id = ?", (character_id,))
+            cursor.execute("SELECT  id, stat_name, xp, level FROM character_stats WHERE character_id = ?", (character_id,))
             character_stats = cursor.fetchall()
 
             character_level = 0
@@ -207,16 +210,14 @@ def update_character_stats(character_id):
                 stat_id = row[0]
                 stat_name = row[1]
                 xp = row[2]
+                stat_level = row[3]
 
-                stat_level = floor(sqrt(xp) / 3)
-                xp_to_level_up = 5 + stat_level * 1.25
-
-
-                if  xp >= xp_to_level_up:
-                    stat_level = stat_level + 1
-                    cursor.execute("UPDATE character_stats SET xp = ? WHERE id = ?", (xp - xp_to_level_up, stat_id))
+                xp_to_level_up = 5 + stat_level*1.25
+                if xp >= xp_to_level_up:
+                 xp = xp_to_level_up
+                 stat_level = stat_level + 1
+                 cursor.execute("UPDATE character_stats SET xp = ?, level = ? WHERE id = ?", (xp, stat_level, stat_id))
                 character_level = character_level + stat_level
-
 
             conn.commit()
         except sqlite3.Error as e:

@@ -5,13 +5,12 @@ def build_item(character, item_delete, add_xp):
     stat_texts = []
     character_level = 0
     for stat in character["stats"]:
-        stat_level = floor(sqrt(stat["xp"]) / 3)
-        character_level = character_level + stat_level
+        character_level = character_level + stat["level"]
 
         stat_texts.append(
             ft.Row([
-               ft.Text(f"{stat['stat_name']}: Level {stat_level}, XP: {stat['xp']}"),
-                ft.ElevatedButton("+XP", on_click=lambda e: add_xp(character["id"], stat['stat_name'], 5))
+               ft.Text(f"{stat['stat_name']}: Level {stat['level']}, XP: {stat['xp']}"),
+                ft.ElevatedButton("+XP", on_click=lambda e, stat_name=stat['stat_name']: add_xp(character["id"], stat_name, 5))
             ])
           )
 
