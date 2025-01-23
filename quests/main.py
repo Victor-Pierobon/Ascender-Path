@@ -6,61 +6,89 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # Add the root directory to sys.path so Python can find modules there
 sys.path.insert(0, project_root)
 import database
-from components.task_item import build_item
+from quests.components.quest_item import build_item
 
 def main(page: ft.Page):
-    page.title = "Task Tracker"
+    page.title = "Quests"
 
+    # UI elements fo quest creation
+    quest_name_field = ft.TextField(label="Quest name")
+    quest_description_field = ft.TextField(label="Quest Description")
+    quest_rank_dropdown = ft.Dropdown(
+       label="Quest Rank",
+       options=[
+          ft.dropdown.Option("E"),
+          ft.dropdown.Option("D"),
+          ft.dropdown.Option("C"),
+          ft.dropdown.Option("B"),
+          ft.dropdown.Option("A"),
+          ft.dropdown.Option("S"),
+       ]
+    )
+   
+    def add_a_quest(e):
+     quest_name = quest_name_field.value
+     quest_description =quest_description_field.value
+     quest_rank = quest_rank_dropdown.value
 
-    # how it should store and displays tasks
-    def add_task(e): # e is the event
-     task = task_field.value # get the value of the task field
-     if task:
-        database.add_task_to_db(task)
-        task_field.value = ""
-        update_task_list_view()
+     if quest_name and quest_description and quest_rank:
+        database.add_quest(quest_name, quest_description, quest_rank)
+        quest_name_field.value = ""
+        quest_description_field.value = ""
+        update_quest_list_view()
         page.update()
 
-    def clear_list(e):
-       database.clear_task_db()
-       update_task_list_view()
-       page.update()
 
     def item_delete(id):
-       database.remove_task_from_db(id)
-       update_task_list_view()
+       database.remove_quest_from_db(id)
+       update_quest_list_view()
        page.update()
 
-    # components and actions
-    task_field = ft.TextField(label = "Add task", on_submit=add_task) # on_submit is an event that triggers when the user presses enter
-    add_button = ft.ElevatedButton("Add", on_click=add_task) # on_click is an event that triggers when the user clicks the button
-    clear_button = ft.ElevatedButton("Clear", on_click=clear_list)
-    task_list_column = ft.Column([])
+    def add_quest_to_character(character_id, quest_id):
+       database.add_character_quest(character_id, quest_id)
+       update_quest_list_view()
+       page.update()
 
-    def update_task_list_view():
-       tasks = database.get_all_tasks()
-       task_list_column.controls.clear()
-       for task in tasks:
-          task_list_column.controls.append(build_item(task, item_delete))
+    def complete_quest(quest_id):
+       database.complete_quest(quest_id)
+       update_quest_list_view()
+       page.update()
 
+    def update_quest_list_view():
+       quests = database.get_all_quests()
+       character_quests = database.get_all_character_quests(1)
+       quest_list_column.controls.clear()
+       for quest in quests:
+          quest_list_column.controls.append(build_item(quest, item_delete, add_quest_to_character, complete_quest))
     page.update()
 
-    database.create_table()
+
+    create_button = ft.ElevatedButton("Create Quest", on_click=add_a_quest)
+    quest_list_column = ft.Column([])
+
+    database.create_quests_table()
     database.create_characters_table()
-    update_task_list_view()
+    database.create_character_stat_table()
+    database.create_character_quests_table()
+    update_quest_list_view()
 
     # User interface
     page.add(
-       ft.Row(
-          [task_field, add_button, clear_button],
-          alignment=ft.MainAxisAlignment.CENTER
-       ),
-       ft.Container(
-          content=task_list_column,
-          border=ft.border.all(1),
-          padding=10
-       )
+        ft.Column([
+           ft.Row(
+                [quest_name_field, quest_description_field, quest_rank_dropdown],
+                 alignment=ft.MainAxisAlignment.CENTER
+             ),
+            ft.Row(
+                [create_button],
+                 alignment=ft.MainAxisAlignment.CENTER
+             ),
+        ft.Container(
+            content=quest_list_column,
+            border=ft.border.all(1),
+            padding=10
+        )
+        ])
     )
-    
 
 ft.app(target=main)
