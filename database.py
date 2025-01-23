@@ -9,15 +9,17 @@ def create_connection():
         print(f"Error connecting to database: {e}")
     return conn
 
-def create_table():
+def create_quests_table():
     conn = create_connection()
     if conn is not None:
         try:
             cursor = conn.cursor()
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS tasks(
+                CREATE TABLE IF NOT EXISTS quests(
                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                           task TEXT NOT NULL
+                           name TEXT NOT NULL,
+                           description TEXT NOT NULL,
+                           rank TEXT NOT NULL
                            )
                     """)
             conn.commit()
@@ -27,55 +29,91 @@ def create_table():
             conn.close()
 
 
-def add_task_to_db(task):
+def add_quest(quest_name, quest_description, quest_rank):
     conn = create_connection()
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO tasks (task) VALUES (?)", (task,))
+            cursor.execute("INSERT INTO quests (name, description, rank) VALUES (?, ?, ?)", (quest_name, quest_description, quest_rank))
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error assing task: {e}")
+            print(f"Error adding quest: {e}")
         finally:
             conn.close()
 
-def get_all_tasks():
+def get_all_quests():
     conn = create_connection()
-    tasks = []
+    quests = []
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, task FROM tasks")
-            tasks = cursor.fetchall()
+            cursor.execute("SELECT id, name, description, rank FROM quests")
+            quests = cursor.fetchall()
         except sqlite3.Error as e:
-            print(f"Error getting tasks: {e}")
+            print(f"Error getting quests: {e}")
         finally:
             conn.close()
-    return tasks
+    return quests
 
-def remove_task_from_db(id):
+def remove_quest_from_db(quest_id):
     conn = create_connection()
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM tasks WHERE id = ?", (id,))
+            cursor.execute("DELETE FROM quests WHERE id = ?", (quest_id,))
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error removing task: {e}")
+            print(f"Error removing quest: {e}")
         finally:
             conn.close()
 
-def clear_task_db():
-    conn = create_connection()
+
+def create_character_quests_table():
+    conn= create_connection()
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM tasks")
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS character_quests (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    character_id INTEGER NOT NULL,
+                    quest_id INTEGER NOT NULL,
+                    FOREIGN KEY (character_id) REFERENCES characters(id),
+                    FOREIGN KEY (quest_id) REFERENCES quests(id)
+                )
+            """)
             conn.commit()
         except sqlite3.Error as e:
-            print(f"Error clearing all tasks: {e}")
+            print(f"Error creating character quests table: {e}")
         finally:
             conn.close()
+
+
+def get_all_character_quests(character_id):
+    conn = create_connection()
+    quests = []
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                    SELECT
+                        quests.id,
+                        quests.name,
+                        quests.description,
+                        quests.rank
+                    FROM quests
+                    INNER JOIN character_quests
+                    ON quests.id = character_quests.quest_id
+                    WHERE character_quests.character_id = ?
+                """, (character_id,))
+            quests = cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"Error getting all quests: {e}")
+        finally:
+            conn.close()
+    return quests
+    
+
 
 def create_characters_table():
     conn = create_connection()
@@ -188,7 +226,7 @@ def add_xp_to_stat(character_id, stat_name, xp_amount):
                 UPDATE character_stats
                 SET xp = xp + ?
                 WHERE character_id = ? AND stat_name = ?
-            """, (xp_amount, character_id, stat_name))
+            """, (xp_amount, character_id, stat_name,))
             conn.commit()
             update_character_stats(character_id)
         except sqlite3.Error as e:
@@ -214,7 +252,7 @@ def update_character_stats(character_id):
 
                 xp_to_level_up = 5 + stat_level*(1.25 + stat_level/10)
                 if xp >= ceil(xp_to_level_up):
-                 xp = floor(xp_to_level_up)
+                 xp = floor(xp - xp_to_level_up)
                  stat_level = stat_level + 1
                  cursor.execute("UPDATE character_stats SET xp = ?, level = ? WHERE id = ?", (xp, stat_level, stat_id))
                 character_level = character_level + stat_level
