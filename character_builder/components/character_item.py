@@ -4,6 +4,7 @@ from math import floor, sqrt
 def build_item(character, item_delete, add_xp):
     stat_texts = []
     character_level = 0
+    stats_ordered = sorted(character["stats"], key=lambda stat : stat["stat_name"])
     for stat in character["stats"]:
         character_level = character_level + stat["level"]
 

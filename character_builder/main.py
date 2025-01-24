@@ -64,6 +64,11 @@ def main(page: ft.Page):
             update_characters_view()
             page.update()
 
+    def show_character_quests(id):
+        nonlocal character_id
+        character_id = id
+        page.update()
+
     # UI elements for character creation
     name_field = ft.TextField(label="Character Name")
     create_button = ft.ElevatedButton("Create Character", on_click=add_character)
@@ -72,6 +77,7 @@ def main(page: ft.Page):
     characters_dropdown = ft.Dropdown(label="Characters")
     quests_dropdown = ft.Dropdown(label="Quests")
     confirmation_text = ft.Text("")
+    character_id = ""
 
     database.create_character_stat_table() # create stat table
     database.create_characters_table() # create characters table
@@ -95,9 +101,17 @@ def main(page: ft.Page):
                  alignment=ft.MainAxisAlignment.CENTER
              ),
              ft.Row(
+               [characters_dropdown, quests_dropdown],
+               alignment=ft.MainAxisAlignment.CENTER  
+             ),
+             ft.Row(
                  [add_quest_to_char_button],
                  alignment=ft.MainAxisAlignment.CENTER
              ),
+             ft.Row(
+                [confirmation_text],
+                 alignment=ft.MainAxisAlignment.CENTER
+               ),
              ft.Container(
                 content=character_list_column,
                 border=ft.border.all(1),
