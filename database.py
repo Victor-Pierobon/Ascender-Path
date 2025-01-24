@@ -112,7 +112,36 @@ def get_all_character_quests(character_id):
         finally:
             conn.close()
     return quests
-    
+
+def add_quest_to_character(character_id, quest_id):
+    conn = create_connection()
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO character_quests (character_id, quest_id)
+                VALUES(?, ?)
+            """, (character_id, quest_id))
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error adding quest to character: {e}")
+        finally:
+            conn.close()
+
+def complete_quest(character_id, quest_id):
+    conn = create_connection()
+    if conn is not None:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                DELETE FROM character_quests
+                WHERE character_id = ? AND quest_id = ?
+            """, (character_id, quest_id))
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error completing quest: {e}")
+        finally:
+            conn.close()
 
 
 def create_characters_table():

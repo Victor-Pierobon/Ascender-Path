@@ -71,6 +71,7 @@ def main(page: ft.Page):
     database.create_character_stat_table()
     database.create_character_quests_table()
     update_quest_list_view()
+    page.update()
 
     # User interface
     page.add(
