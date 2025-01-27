@@ -1,16 +1,21 @@
 import flet as ft
+from database import update_character_stats
 from math import floor, sqrt
 
-def build_item(character, item_delete, add_xp):
+def build_item(character, item_delete, add_xp, show_character_quests):
     stat_texts = []
     character_level = 0
     stats_ordered = sorted(character["stats"], key=lambda stat : stat["stat_name"])
-    for stat in character["stats"]:
+    for stat in stats_ordered:
         character_level = character_level + stat["level"]
+        xp_to_level_up =  5 + stat['level'] * (1.25 + stat['level']/10)
+
+        progress = stat["xp"] / xp_to_level_up if stat["xp"] < xp_to_level_up else 1
 
         stat_texts.append(
             ft.Row([
-               ft.Text(f"{stat['stat_name']}: Level {stat['level']}, XP: {stat['xp']}"),
+               ft.Text(f"{stat['stat_name']}: Level {stat['level']}"),
+               ft.ProgressBar(value=progress, width=200),
                 ft.ElevatedButton("+XP", on_click=lambda e, stat_name=stat['stat_name']: add_xp(character["id"], stat_name, 5))
             ])
           )

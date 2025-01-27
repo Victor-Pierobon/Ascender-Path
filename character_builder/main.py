@@ -46,7 +46,7 @@ def main(page: ft.Page):
         characters = database.get_all_characters()
         character_list_column.controls.clear()
         for character in characters:
-            character_list_column.controls.append(build_item(character, item_delete, add_xp))
+            character_list_column.controls.append(build_item(character, item_delete, add_xp, show_character_quests))
         page.update()
 
 
