@@ -4,6 +4,8 @@ import os
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, project_root)
 import database
+import character_builder.main as character_builder_main
+import quests.main as quests_main
 
 
 def main(page: ft.Page):
@@ -11,27 +13,37 @@ def main(page: ft.Page):
 
     def route_change(route):
         page.views.clear()
-        if page.route =="/quests":
+        if page.route.startswith("/quests"):
+            character_id = page.route.split("?")[1].split("=") if len(page.route.split("?")) > 1 else ""
             page.views.append(
-                database.quests.main.main(page)
+                quests_main.main(page, character_id)
             )
         else:
             page.views.append(
-                database.character_builder.main.main(page)
+                character_builder_main.main(page)
             )
+        page.update()
 
     page.on_route_change = route_change
+    page.go(page.route)
 
     page.add(
-        ft.ElevatedButton("Characters", on_click=lambda _: page.go("/characters"))
+        ft.Row(
+            [
+                ft.ElevatedButton("Characters", on_click=lambda _: page.go("/characters")),
+                ft.ElevatedButton("Quests", on_click=lambda _: page.go("/quests"))
+            ],
+            alignment=ft.MainAxisAlignment.CENTER
+        )        
     )
-    if page.route =="/quests":
+    if page.route.startswith("/quests"):
+        character_id = page.route.split("?")[1].split("=")[1] if len(page.route.split("?")) > 1 else ""
         page.views.append(
-            database.quests.main.main(page)
+            quests_main.main(page, character_id)
         )
     else:
         page.views.append(
-            database.character_builder.main.main(page)
+            character_builder_main.main(page)
         )
     page.update()
 ft.app(target=main)

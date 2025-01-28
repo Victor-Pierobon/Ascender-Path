@@ -67,7 +67,8 @@ def main(page: ft.Page):
     def show_character_quests(id):
         nonlocal character_id
         character_id = id
-        page.route = "/quests"
+        print(f"show_character_quests was called, character_id = {character_id}")
+        page.go(f"/quests?id={character_id}")
         page.update()
 
     def complete_quest_from_character(character_id, quest_id):
