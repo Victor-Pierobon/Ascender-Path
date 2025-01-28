@@ -2,7 +2,7 @@ import flet as ft
 from database import update_character_stats
 from math import floor, sqrt
 
-def build_item(character, item_delete, add_xp, show_character_quests):
+def build_item(character, item_delete, add_xp, show_character_quests, complete_quest_from_character):
     stat_texts = []
     character_level = 0
     stats_ordered = sorted(character["stats"], key=lambda stat : stat["stat_name"])
@@ -24,6 +24,8 @@ def build_item(character, item_delete, add_xp, show_character_quests):
     return ft.Row([
         ft.Text(f"Name: {character['name']}, Level: {character_level}, Rank: {rank}"),
         ft.Column(stat_texts),
+        ft.ElevatedButton("Quests", on_click=lambda e: show_character_quests(character["id"])),
+        ft.ElevatedButton("Complete", on_click=lambda e: complete_quest_from_character(character["id"], 1)),
         ft.ElevatedButton("Delete", on_click=lambda e: item_delete(character["id"]))
     ])
 

@@ -46,7 +46,7 @@ def main(page: ft.Page):
         characters = database.get_all_characters()
         character_list_column.controls.clear()
         for character in characters:
-            character_list_column.controls.append(build_item(character, item_delete, add_xp, show_character_quests))
+            character_list_column.controls.append(build_item(character, item_delete, add_xp, show_character_quests, complete_quest_from_character))
         page.update()
 
 
@@ -67,6 +67,12 @@ def main(page: ft.Page):
     def show_character_quests(id):
         nonlocal character_id
         character_id = id
+        page.route = "/quests"
+        page.update()
+
+    def complete_quest_from_character(character_id, quest_id):
+        database.complete_quest(character_id, quest_id)
+        update_characters_view()
         page.update()
 
     # UI elements for character creation

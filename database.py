@@ -280,8 +280,8 @@ def update_character_stats(character_id):
                 stat_level = row[3]
 
                 xp_to_level_up = 5 + stat_level*(1.25 + stat_level/10)
-                if xp >= ceil(xp_to_level_up):
-                 xp = floor(xp - xp_to_level_up)
+                if xp >= floor(xp_to_level_up):
+                 xp = xp - floor(xp_to_level_up)
                  stat_level = stat_level + 1
                  cursor.execute("UPDATE character_stats SET xp = ?, level = ? WHERE id = ?", (xp, stat_level, stat_id))
                 character_level = character_level + stat_level
