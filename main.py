@@ -18,14 +18,14 @@ def main(page: ft.Page):
             page.views.append(
                 quests_main.main(page, character_id)
             )
-        else:
+        else: # Default route - now explicitly Characters
             page.views.append(
                 character_builder_main.main(page)
             )
         page.update()
 
     page.on_route_change = route_change
-    page.go(page.route)
+    page.go("/characters")  # Explicitly set initial route to "/characters"
 
     page.add(
         ft.Row(
@@ -34,16 +34,7 @@ def main(page: ft.Page):
                 ft.ElevatedButton("Quests", on_click=lambda _: page.go("/quests"))
             ],
             alignment=ft.MainAxisAlignment.CENTER
-        )        
+        )
     )
-    if page.route.startswith("/quests"):
-        character_id = page.route.split("?")[1].split("=")[1] if len(page.route.split("?")) > 1 else ""
-        page.views.append(
-            quests_main.main(page, character_id)
-        )
-    else:
-        page.views.append(
-            character_builder_main.main(page)
-        )
-    page.update()
+
 ft.app(target=main)

@@ -46,7 +46,16 @@ def main(page: ft.Page):
         characters = database.get_all_characters()
         character_list_column.controls.clear()
         for character in characters:
-            character_list_column.controls.append(build_item(character, item_delete, add_xp, show_character_quests, complete_quest_from_character))
+            character_list_column.controls.append(
+                build_item(
+                    page=page, # Explicitly pass the 'page' object here
+                    character=character,
+                    item_delete=item_delete,
+                    add_xp=add_xp,
+                    show_character_quests=show_character_quests,
+                    complete_quest_from_character=complete_quest_from_character
+                )
+            )
         page.update()
 
 
@@ -64,12 +73,22 @@ def main(page: ft.Page):
             update_characters_view()
             page.update()
 
-    def show_character_quests(id):
-        nonlocal character_id
+    def show_character_quests(page: ft.Page, id):
+        print("show_character_quests CALLED - START")  # Debugging print at function start
         character_id = id
-        print(f"show_character_quests was called, character_id = {character_id}")
-        page.go(f"/quests?id={character_id}")
-        page.update()
+        print(f"show_character_quests - Character ID received: {character_id}")  # Debugging print - ID value
+        print(f"show_character_quests - Page object: {page}")  # Debugging print - Page object itself
+        if page is not None:
+            print("show_character_quests - Page object is NOT None")  # Check if page is valid
+            try:
+                page.go(f"/quests?id={character_id}")
+                print("show_character_quests - page.go() called SUCCESSFULLY")  # Confirm page.go call
+            except Exception as e:
+                print(f"show_character_quests - ERROR during page.go(): {e}")  # Catch and print any errors during page.go
+        else:
+            print("show_character_quests - Page object is NULL!")  # Indicate if page is unexpectedly None
+        print("show_character_quests CALLED - END")  # Debugging print at function end
+    page.update()  # Keep the page.update() to ensure any UI changes get reflected
 
     def complete_quest_from_character(character_id, quest_id):
         database.complete_quest(character_id, quest_id)
