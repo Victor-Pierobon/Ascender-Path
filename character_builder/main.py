@@ -19,16 +19,15 @@ def main(page: ft.Page):
        characters_dropdown.options.clear()
        for character in characters:
           characters_dropdown.options.append(ft.dropdown.Option(str(character["id"]), text=character["name"]))
-       
+
        quests_dropdown.options.clear()
        for quest in quests:
         quests_dropdown.options.append(ft.dropdown.Option(str(quest[0]), text=quest[1]))
        page.update()
 
-
     def add_character(e):
         name = name_field.value
-        
+
         if name:
             character_data = (name,) # Create a tuple with default values
             database.add_character(character_data) # add character to database
@@ -41,6 +40,23 @@ def main(page: ft.Page):
         database.add_xp_to_stat(character_id, stat_name, xp_amount)
         update_characters_view()
         page.update()
+    
+    def route_change(e):
+       print(f"route_change from character_builder, route={e.page.route}")
+       page = e.page
+       page.views.clear()
+       if page.route.startswith("/quests?id="):
+         page.go(page.route)
+
+    def show_character_quests(page, id): # Added page as argument
+        print(f"show_character_quests was called, character_id = {id}")
+        page.go(f"/quests?id={id}")
+        page.update()
+
+    def complete_quest_from_character(character_id, quest_id):
+        database.complete_quest(character_id, quest_id)
+        update_characters_view()
+        page.update()
 
     def update_characters_view():
         characters = database.get_all_characters()
@@ -48,12 +64,12 @@ def main(page: ft.Page):
         for character in characters:
             character_list_column.controls.append(
                 build_item(
-                    page=page, # Explicitly pass the 'page' object here
-                    character=character,
-                    item_delete=item_delete,
-                    add_xp=add_xp,
-                    show_character_quests=show_character_quests,
-                    complete_quest_from_character=complete_quest_from_character
+                   page=page, # Explicitly pass the page object
+                   character=character,
+                   item_delete=item_delete,
+                   add_xp=add_xp,
+                   show_character_quests=show_character_quests,
+                   complete_quest_from_character=complete_quest_from_character
                 )
             )
         page.update()
@@ -73,27 +89,6 @@ def main(page: ft.Page):
             update_characters_view()
             page.update()
 
-    def show_character_quests(page: ft.Page, id):
-        print("show_character_quests CALLED - START")  # Debugging print at function start
-        character_id = id
-        print(f"show_character_quests - Character ID received: {character_id}")  # Debugging print - ID value
-        print(f"show_character_quests - Page object: {page}")  # Debugging print - Page object itself
-        if page is not None:
-            print("show_character_quests - Page object is NOT None")  # Check if page is valid
-            try:
-                page.go(f"/quests?id={character_id}")
-                print("show_character_quests - page.go() called SUCCESSFULLY")  # Confirm page.go call
-            except Exception as e:
-                print(f"show_character_quests - ERROR during page.go(): {e}")  # Catch and print any errors during page.go
-        else:
-            print("show_character_quests - Page object is NULL!")  # Indicate if page is unexpectedly None
-        print("show_character_quests CALLED - END")  # Debugging print at function end
-    page.update()  # Keep the page.update() to ensure any UI changes get reflected
-
-    def complete_quest_from_character(character_id, quest_id):
-        database.complete_quest(character_id, quest_id)
-        update_characters_view()
-        page.update()
 
     # UI elements for character creation
     name_field = ft.TextField(label="Character Name")
@@ -109,11 +104,11 @@ def main(page: ft.Page):
     database.create_characters_table() # create characters table
     database.create_quests_table()
     database.create_character_quests_table()
-    update_characters_view() # initial render of the characters
-    update_dropdowns()
+
 
     add_quest_to_char_button = ft.ElevatedButton("Add Quest To Character", on_click= add_quest_to_character_test)
 
+    page.on_route_change = route_change # Assign the route_change in the character_builder
     # Layout for the UI
     page.add(
       ft.Column(
@@ -128,7 +123,7 @@ def main(page: ft.Page):
              ),
              ft.Row(
                [characters_dropdown, quests_dropdown],
-               alignment=ft.MainAxisAlignment.CENTER  
+               alignment=ft.MainAxisAlignment.CENTER
              ),
              ft.Row(
                  [add_quest_to_char_button],
@@ -147,5 +142,7 @@ def main(page: ft.Page):
          ]
        )
     )
+    update_characters_view() # initial render of the characters - moved here!
+    update_dropdowns() # update dropdowns - moved here!
 
 ft.app(target=main)

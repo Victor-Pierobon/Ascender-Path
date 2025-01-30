@@ -24,7 +24,7 @@ def build_item(page: ft.Page, character, item_delete, add_xp, show_character_que
     return ft.Row([
         ft.Text(f"Name: {character['name']}, Level: {character_level}, Rank: {rank}"),
         ft.Column(stat_texts),
-        ft.ElevatedButton("Quests", on_click=lambda e, current_page=page: show_character_quests(current_page, character["id"])), # Capture and pass 'page' here
+        ft.ElevatedButton("Quests", on_click=lambda e: show_character_quests(e.control.page, character["id"])),
         ft.ElevatedButton("Complete", on_click=lambda e: complete_quest_from_character(character["id"], 1)),
         ft.ElevatedButton("Delete", on_click=lambda e: item_delete(character["id"]))
     ])
