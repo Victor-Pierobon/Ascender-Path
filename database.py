@@ -35,7 +35,7 @@ def add_task_to_db(description):
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO tasks (description) VALUES (?)", (description))
+            cursor.execute("INSERT INTO tasks (description) VALUES (?)", (description,))
             conn.commit()
         except sqlite3.Error as e:
             print(f"Error adding task to database: {e}")
